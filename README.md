@@ -20,11 +20,11 @@ Retype new password:                     #パスワードを再度入力
 passwd: password updated successfully
 Changing the user information for menta
 Enter the new value, or press ENTER for the default
-	Full Name []:                          #デフォルトの場合はEnter
-	Room Number []:                        #デフォルトの場合はEnter
-	Work Phone []:                         #デフォルトの場合はEnter
-	Home Phone []:                         #デフォルトの場合はEnter
-	Other []:                              #デフォルトの場合はEnter
+	Full Name []:                    #デフォルトの場合はEnter
+	Room Number []:                  #デフォルトの場合はEnter
+	Work Phone []:                   #デフォルトの場合はEnter
+	Home Phone []:                   #デフォルトの場合はEnter
+	Other []:                        #デフォルトの場合はEnter
 Is the information correct? [Y/n] Y      #正しい場合はY
 info: Adding new user `menta' to supplemental / extra groups `users' ...
 info: Adding user `menta' to group `users' ...
@@ -74,6 +74,77 @@ mentaユーザーでssh接続
 $ ssh -i ~/.ssh/ubuntu-dev01 menta@[接続先のIPアドレス]
 ```
 接続先のIPアドレスは、`ip address show`などで確認。
+
+### Nginxのバーチャルホストの設定
+
+バーチャルホストの設定は直接/etc/nginx/nginx.confに書くのではなく、  
+includeされている/etc/nginx/conf.dの配下に拡張子をconfとして作成していく。
+```
+$ cat /etc/nginx/nginx.conf | grep include
+    include       /etc/nginx/mime.types;
+    include /etc/nginx/conf.d/*.conf;
+```
+
+バーチャルホストdev.menta.me用設定ファイルの作成
+```
+$ sudo vim /etc/nginx/conf.d/dev.menta.me.conf
+$ cat /etc/nginx/conf.d/dev.menta.me.conf
+server {
+    listen 80;
+    server_name dev.menta.me;        #バーチャルホスト
+
+    root /var/www/dev.menta.me;      #ドキュメントルート
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+クライアント端末にてdev.menta.meの名前解決用設定
+```
+$ sudo vim /etc/hosts     # [接続先のIPアドレス] dev.menta.meを追記
+$ cat /etc/hosts | grep dev.menta.me
+[接続先のIPアドレス] dev.menta.me
+```
+
+### Nginxのログフォーマットの変更
+
+/etc/nginx/nginx.confの`log_format main`の次に`log_format custom`として追記。  
+`access_log  /var/log/nginx/access.log  main;` のmainをcustomに変更。
+```
+$ sudo vim /etc/nginx/nginx.conf
+
+    log_format custom '$time_iso8601 '
+                      'server_addr:$server_addr '
+                      'host:$host '
+                      'method:$request_method '
+                      'reqsize:$request_length '
+                      'uri:$uri '
+                      'query:$query_string '
+                      'status:$status '
+                      'size:$body_bytes_sent '
+                      'referer:$http_referer '
+                      'ua:$http_user_agent '
+                      'forwardedfor:$http_x_forwarded_for '
+                      'reqtime:$request_time '
+                      'apptime:$upstream_response_time';
+
+
+    access_log  /var/log/nginx/access.log  custom;
+```
+
+ログの確認。
+```
+$ cat /var/log/nginx/access.log
+[nginx] time:2024-09-14T20:57:28+09:00 server_addr:192.168.64.10   host:192.168.64.1     method:GET reqsize:542     uri:/?p=2802    query:p=2802    status:304      size:0  referer:-       ua:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36       forwardedfor:-    reqtime:0.000   apptime:-
+```
+課題のフォーマットに沿っているか確かめる。
+```
+[nginx] time:2023-08-06T22:21:55+09:00  server_addr:10.15.0.5   host:216.244.66.233     method:GETreqsize:217     uri:/?p=2802    query:p=2802    status:301      size:5  referer:-       ua:Mozilla/5.0 (compatible; DotBot/1.2; +https://opensiteexplorer.org/dotbot; help@moz.com)       forwardedfor:-    reqtime:0.190   apptime:0.188
+```
+
 
 ## WordPressのインストール
 
