@@ -1,0 +1,20 @@
+---
+copy_setting_files:
+  nginx:
+    comment: "add nginx conf"
+    src: "files/nginx.conf"
+    dest: "/etc/nginx/nginx.conf"
+
+  virtualhost1:
+    comment: "add virtualhost1 conf"
+    src: "files/dev.menta.me.conf"
+    dest: "/etc/nginx/conf.d/dev.menta.me.conf"
+
+add_documentroot_directory:
+  documentroot1:
+    comment: "add documentroot1 directory"
+    path: "/var/www/dev.menta.me"
+    state: "directory"
+    owner: "menta"
+    group: "www-data"
+    mode: "0755"
