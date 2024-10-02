@@ -5,4 +5,4 @@ new_users:
     initial_password: "{{ lookup('env', 'ANSIBLE_MENTA_PASSWORD') | password_hash('sha512') }}"
     groups: menta
     add_sudoers: true
-    priv: stg
+    priv: dev
