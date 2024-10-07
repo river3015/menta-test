@@ -1,0 +1,41 @@
+---
+- name: Ensure Nginx is installed
+  apt:
+    name: nginx
+    state: present
+
+- name: Ensure Nginx is running
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Copy Nginx conf
+  copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ copy_nginx_conf | dict2items }}"
+  notify: restart nginx
+
+- name: Copy VirtualHosts conf
+  template:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ copy_virtualhosts_conf | dict2items }}"
+  notify: restart nginx
+
+- name: Create directory for documentroot
+  file:
+    path: "{{ item.value.path }}"
+    state: "{{ item.value.state }}"
+    owner: "{{ item.value.owner }}"
+    group: "{{ item.value.group }}"
+    mode: "{{ item.value.mode }}"
+  loop: "{{ add_documentroot_directory | dict2items }}"
+  notify: restart nginx
