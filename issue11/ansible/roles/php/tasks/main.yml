@@ -17,6 +17,12 @@
       - php8.3-bcmath
     state: present
 
+- name: Ensure php8.3-fpm is running
+  service:
+    name: php8.3-fpm
+    state: started
+    enabled: true
+
 - name: Copy PHP related files
   copy:
     src: "{{ item.value.src }}"
