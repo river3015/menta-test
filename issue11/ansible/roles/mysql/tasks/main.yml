@@ -1,0 +1,34 @@
+---
+- name: Install MySQL
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Ensure MySQL is running
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: Install PyMySQL for MySQL support
+  apt:
+    name: python3-pymysql
+    state: present
+
+- name: Create WordPress database
+  community.mysql.mysql_db:
+    name: wordpress
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create MySQL user for WordPress
+  community.mysql.mysql_user:
+    name: "{{ item.value.name }}"
+    password: "{{ item.value.password }}"
+    host: "{{ item.value.host }}"
+    priv: "{{ item.value.priv }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  loop: "{{ new_users | dict2items }}"

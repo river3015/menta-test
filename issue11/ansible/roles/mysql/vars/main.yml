@@ -1,0 +1,8 @@
+---
+new_users:
+  user01:
+    comment: "Add User01"
+    name: "{{ lookup('env', 'ANSIBLE_MYSQL_USER01') }}"
+    password: "{{ lookup('env', 'ANSIBLE_USER01_PASSWORD') }}"
+    host: localhost
+    priv: "wordpress.*:ALL"
