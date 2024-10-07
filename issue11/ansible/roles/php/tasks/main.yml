@@ -1,0 +1,34 @@
+---
+- name: Install PHP 8.3 and related packages for WordPress
+  apt:
+    name:
+      - php8.3
+      - php8.3-fpm
+      - php8.3-cli
+      - php8.3-mysql
+      - php8.3-xml
+      - php8.3-mbstring
+      - php8.3-curl
+      - php8.3-gd
+      - php8.3-intl
+      - php8.3-opcache
+      - php8.3-zip
+      - php8.3-soap
+      - php8.3-bcmath
+    state: present
+
+- name: Ensure php8.3-fpm is running
+  service:
+    name: php8.3-fpm
+    state: started
+    enabled: true
+
+- name: Copy PHP related files
+  copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ copy_www_conf | dict2items }}"
+  notify: restart php-fpm
