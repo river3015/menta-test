@@ -10,12 +10,3 @@ copy_virtualhosts_conf:
     comment: "add virtualhost1 conf"
     src: "{{ inventory_hostname }}.conf.j2"
     dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.conf"
-
-add_documentroot_directory:
-  documentroot1:
-    comment: "add documentroot1 directory"
-    path: "/var/www/{{ inventory_hostname }}"
-    state: "directory"
-    owner: "menta"
-    group: "www-data"
-    mode: "0755"

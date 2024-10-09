@@ -29,13 +29,3 @@
     mode: '0644'
   loop: "{{ copy_virtualhosts_conf | dict2items }}"
   notify: restart nginx
-
-- name: Create directory for documentroot
-  file:
-    path: "{{ item.value.path }}"
-    state: "{{ item.value.state }}"
-    owner: "{{ item.value.owner }}"
-    group: "{{ item.value.group }}"
-    mode: "{{ item.value.mode }}"
-  loop: "{{ add_documentroot_directory | dict2items }}"
-  notify: restart nginx

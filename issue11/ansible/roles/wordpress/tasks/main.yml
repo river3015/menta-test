@@ -1,0 +1,29 @@
+---
+- name: Download latest WordPress
+  get_url:
+    url: "{{ wordpress_url }}"
+    dest: /var/tmp/latest-ja.tar.gz
+    force: false
+
+- name: Extract WordPress
+  unarchive:
+    src: /var/tmp/latest-ja.tar.gz
+    dest: /var/tmp
+    creates: /var/tmp/wordpress
+    remote_src: true
+
+- name: Check if documentroot exists
+  stat:
+    path: /var/www/{{ inventory_hostname }}/
+  register: documentroot_stat
+
+- name: Copy WordPress files to web root
+  copy:
+    src: /var/tmp/wordpress/
+    dest: "{{ documentroot.dest }}"
+    owner: "{{ documentroot.owner }}"
+    group: www-data
+    mode: '0755'
+    force: true
+    remote_src: true
+  when: not documentroot_stat.stat.exists
