@@ -1,0 +1,12 @@
+---
+- hosts: all
+  roles:
+    - common
+
+- hosts: web_ap_db
+  roles:
+    - nginx
+    - php
+    - mysql
+    - wordpress
+    - backup

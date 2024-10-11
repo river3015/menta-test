@@ -1,0 +1,10 @@
+---
+backup_user:
+  name: "{{ lookup('env', 'ANSIBLE_MYSQL_BACKUP_USER')}}"
+  password: "{{ lookup('env', 'ANSIBLE_MYSQL_BACKUP_PASSWORD')}}"
+  host: localhost
+  priv: "*.*:SELECT,RELOAD,PROCESS,SHOW DATABASES,LOCK TABLES,EVENT,TRIGGER"
+
+backup_sh_file:
+  src: "files/mysql_backup.sh"
+  dest: "/usr/local/bin/"

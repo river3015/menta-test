@@ -1,0 +1,35 @@
+---
+- name: Create MySQL user for MySQL Backup
+  community.mysql.mysql_user:
+    name: "{{ backup_user.name }}"
+    password: "{{ backup_user.password }}"
+    host: "{{ backup_user.host }}"
+    priv: "{{ backup_user.priv }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Ensure MYSQL_USER environment variable
+  lineinfile:
+    path: /etc/environment
+    line: "{{ item.line }}"
+    create: yes
+    state: present
+  loop:
+    - { line: "ANSIBLE_MYSQL_BACKUP_USER={{ backup_user.name }}" }
+    - { line: "ANSIBLE_MYSQL_BACKUP_PASSWORD={{ backup_user.password }}" }
+
+- name: Copy backup related files
+  copy:
+    src: "{{ backup_sh_file.src }}"
+    dest: "{{ backup_sh_file.dest }}"
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Add cron job for MySQL backup
+  cron:
+    name: "MySQL backup"
+    minute: "0"
+    hour: "2"
+    user: "root"
+    job: "/usr/local/bin/mysql_backup.sh"
