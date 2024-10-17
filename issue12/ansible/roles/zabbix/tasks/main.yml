@@ -1,0 +1,79 @@
+---
+- name: Install xz-utils
+  apt:
+    name: xz-utils
+    state: present
+
+- name: Download Zabbix repository package
+  get_url:
+    url: "{{ zabbix_repo_url }}"
+    dest: "{{ zabbix_repo_pkg }}"
+    force: false
+
+- name: Install Zabbix repository package
+  apt:
+    deb: "{{ zabbix_repo_pkg }}"
+  notify: Update apt cache
+
+- name: Install Zabbix packages
+  apt:
+    name: "{{ zabbix_packages }}"
+    state: present
+
+- name: Check if Zabbix schema is already imported
+  community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    query: "SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema='{{ zabbix_db_name }}' AND table_name='acknowledges';"
+  register: zabbix_schema_check
+
+- name: Temporarily set log_bin_trust_function_creators to 1
+  community.mysql.mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 1
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: zabbix_schema_check.query_result[0][0]['count'] == 0
+
+- name: Import initial Zabbix schema
+  community.mysql.mysql_db:
+    name: "{{ zabbix_db_name }}"
+    state: import
+    target: "{{ zabbix_schema_sql_path }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: zabbix_schema_check.query_result[0][0]['count'] == 0
+
+- name: Reset log_bin_trust_function_creators to 0
+  community.mysql.mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 0
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: zabbix_schema_check.query_result[0][0]['count'] == 0
+
+- name: Copy Zabbix Template
+  template:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ copy_zabbix_template | dict2items }}"
+  notify: Restart Related Services
+
+- name: Copy Zabbix Conf
+  copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ copy_zabbix_conf | dict2items }}"
+  notify: Restart Related Services
+
+- name: Ensure www-data can access zabbix directory
+  file:
+    path: "{{ zabbix_directory }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: true
+  notify: Restart Related Services

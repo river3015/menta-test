@@ -1,0 +1,49 @@
+---
+- name: Install Relative tools
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - adduser
+    - libfontconfig1
+    - musl
+
+- name: Download Grafana repository package
+  get_url:
+    url: "{{ grafana_repo_url }}"
+    dest: "{{ grafana_repo_pkg }}"
+    force: false
+
+- name: Install Grafana repository package
+  apt:
+    deb: "{{ grafana_repo_pkg }}"
+  notify: Restart Grafana
+
+- name: Install Grafana packages
+  apt:
+    name: "{{ grafana_packages }}"
+    state: present
+
+- name: Install Grafana Plugin
+  community.grafana.grafana_plugin:
+    name: alexanderzobnin-zabbix-app
+    state: present
+  notify: Restart Grafana
+
+- name: Ensure grafana can access plugin directory
+  file:
+    path: "{{ grafana_plugin_directory }}"
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: '0755'
+    recurse: true
+
+- name: Copy grafana ini
+  template:
+    src: "{{ grafana_ini.src }}"
+    dest: "{{ grafana_ini.dest }}"
+    owner: root
+    group: grafana
+    mode: '0644'
+  notify: Restart Grafana

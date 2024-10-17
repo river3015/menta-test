@@ -1,0 +1,14 @@
+---
+- hosts: ZabbixServer
+  roles:
+    - common
+    - nginx
+    - php
+    - mysql
+    - zabbix
+    - grafana
+
+- hosts: ZabbixAgent
+  roles:
+    - zabbixagent
+

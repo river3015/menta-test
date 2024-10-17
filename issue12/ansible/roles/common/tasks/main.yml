@@ -1,0 +1,29 @@
+---
+- name: Create New User
+  user:
+    name: "{{ item.value.name }}"
+    password: "{{ item.value.password }}"
+    update_password: on_create
+    groups: "{{ item.value.groups }}"
+    shell: /bin/bash
+    home: /home/{{ item.value.name }}
+    state: present
+  loop: "{{ new_users | dict2items }}"
+
+- name: Distribute authorized key
+  ansible.posix.authorized_key:
+    user: "{{ item.value.name }}"
+    key: "{{ lookup('file', '~/.ansible/zabbix.menta.me.pub') }}"
+    state: present
+  loop: "{{ new_users | dict2items }}"
+
+- name: Deploy temporary sudoers files
+  template:
+    src: "{{ item.value.priv }}_sudoers.j2"
+    dest: "/etc/sudoers.d/{{ item.value.name }}"
+    owner: root
+    group: root
+    mode: 0400
+    validate: 'visudo -c -f %s'
+  loop: "{{ new_users | dict2items }}"
+

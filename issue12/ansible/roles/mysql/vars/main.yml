@@ -1,0 +1,13 @@
+---
+new_users:
+  user01:
+    name: "{{ lookup('env', 'ANSIBLE_ZABBIX_MYSQL_USER01') }}"
+    password: "{{ lookup('env', 'ANSIBLE_ZABBIX_MYSQL_USER01_PASSWORD') }}"
+    host: localhost
+    priv: "{{ lookup('env', 'ANSIBLE_ZABBIX_MYSQL_DB01') }}.*:ALL"
+
+new_databases:
+  db01:
+    name: "{{ lookup('env', 'ANSIBLE_ZABBIX_MYSQL_DB01') }}"
+    encoding: utf8
+    collation: utf8_bin

@@ -1,0 +1,35 @@
+---
+- name: Install MySQL
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Ensure MySQL is running
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: Install PyMySQL for MySQL support
+  apt:
+    name: python3-pymysql
+    state: present
+
+- name: Create Zabbix database
+  community.mysql.mysql_db:
+    name: "{{ item.value.name }}"
+    encoding: "{{ item.value.encoding }}"
+    collation: "{{ item.value.collation }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  loop: "{{ new_databases | dict2items }}"
+
+- name: Create MySQL user for Zabbix
+  community.mysql.mysql_user:
+    name: "{{ item.value.name }}"
+    password: "{{ item.value.password }}"
+    host: "{{ item.value.host }}"
+    priv: "{{ item.value.priv }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  loop: "{{ new_users | dict2items }}"

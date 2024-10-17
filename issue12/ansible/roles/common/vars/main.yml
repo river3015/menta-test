@@ -1,0 +1,9 @@
+---
+new_users:
+  user01:
+    comment: "Add User01"
+    name: "{{ lookup('env', 'ANSIBLE_ZABBIX_USER01') }}"
+    password: "{{ lookup('env', 'ANSIBLE_ZABBIX_USER01_PASSWORD') | password_hash('sha512') }}"
+    groups: "{{ lookup('env', 'ANSIBLE_ZABBIX_USER01') }}"
+    add_sudoers: true
+    priv: dev
