@@ -1,0 +1,6 @@
+---
+copy_nginx_conf:
+  nginx:
+    comment: "add nginx conf"
+    src: "files/nginx.conf"
+    dest: "/etc/nginx/nginx.conf"

@@ -1,0 +1,14 @@
+---
+- name: Restart Related Services
+  service:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - zabbix-server
+    - zabbix-agent
+    - nginx
+    - php7.4-fpm
+
+- name: Update apt cache
+  apt:
+    update_cache: true

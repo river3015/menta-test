@@ -1,0 +1,4 @@
+---
+ansible_user: menta
+ansible_python_interpreter: /usr/bin/python3.12
+ansible_ssh_private_key_file: ~/.ssh/ansible-study

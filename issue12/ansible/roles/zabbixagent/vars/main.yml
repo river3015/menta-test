@@ -1,0 +1,9 @@
+---
+zabbix_repo_url: "https://repo.zabbix.com/zabbix/5.0/ubuntu-arm64/pool/main/z/zabbix-release/zabbix-release_5.0-2+ubuntu24.04_all.deb"
+zabbix_repo_pkg: "/var/tmp/zabbix-release_5.0-2+ubuntu24.04_all.deb"
+zabbix_packages: zabbix-agent
+
+copy_zabbix_template:
+  zabbix_agentd.conf:
+    src: zabbix_agentd.conf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf

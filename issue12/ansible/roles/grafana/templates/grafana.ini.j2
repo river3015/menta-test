@@ -1,0 +1,7 @@
+[server]
+domain = {{ inventory_hostname }}
+root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana/
+serve_from_sub_path = true
+
+[recording_rules]
+timeout = 30s

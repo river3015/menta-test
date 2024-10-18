@@ -1,0 +1,26 @@
+---
+- name: Download Zabbix repository package
+  get_url:
+    url: "{{ zabbix_repo_url }}"
+    dest: "{{ zabbix_repo_pkg }}"
+    force: false
+
+- name: Install Zabbix repository package
+  apt:
+    deb: "{{ zabbix_repo_pkg }}"
+
+- name: Install Zabbix packages
+  apt:
+    name: "{{ zabbix_packages }}"
+    state: present
+  notify: Restart Zabbix Agent
+
+- name: Copy Zabbix Template
+  template:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ copy_zabbix_template | dict2items }}"
+  notify: Restart Zabbix Agent

@@ -1,0 +1,33 @@
+---
+- name: Install PHP 7.4 and related packages for Zabbix
+  apt:
+    name:
+      - php7.4
+      - php7.4-fpm
+      - php7.4-cli
+      - php7.4-mysql
+      - php7.4-xml
+      - php7.4-mbstring
+      - php7.4-curl
+      - php7.4-gd
+      - php7.4-zip
+      - php7.4-json
+      - php7.4-ldap
+      - php7.4-bcmath
+    state: present
+
+- name: Ensure php7.4-fpm is running
+  service:
+    name: php7.4-fpm
+    state: started
+    enabled: true
+
+- name: Copy PHP related files
+  copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ copy_www_conf | dict2items }}"
+  notify: restart php-fpm

@@ -1,0 +1,27 @@
+---
+zabbix_repo_url: "https://repo.zabbix.com/zabbix/5.0/ubuntu-arm64/pool/main/z/zabbix-release/zabbix-release_5.0-1+ubuntu20.04_all.deb"
+zabbix_repo_pkg: "/tmp/zabbix-release_5.0-1+ubuntu20.04_all.deb"
+zabbix_packages:
+  - zabbix-server-mysql
+  - zabbix-frontend-php
+  - zabbix-nginx-conf
+  - zabbix-agent
+
+copy_zabbix_template:
+  zabbix_server.conf:
+    src: zabbix_server.conf.j2
+    dest: /etc/zabbix/zabbix_server.conf
+
+  nginx.conf:
+    src: nginx.conf.j2
+    dest: /etc/zabbix/nginx.conf
+
+copy_zabbix_conf:
+  php_fpm.conf:
+    src: files/php-fpm.conf
+    dest: /etc/zabbix/php-fpm.conf
+
+zabbix_db_name: "{{ lookup('env','ANSIBLE_ZABBIX_MYSQL_DB01')}}"
+zabbix_schema_sql_path: "/usr/share/doc/zabbix-server-mysql/create.sql.gz"
+
+zabbix_directory: "/usr/share/zabbix"

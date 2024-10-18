@@ -1,0 +1,6 @@
+---
+copy_www_conf:
+  nginx:
+    comment: "add www.conf"
+    src: "files/www.conf"
+    dest: "/etc/php/7.4/fpm/pool.d/www.conf"
