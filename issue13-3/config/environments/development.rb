@@ -2,6 +2,7 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  config.hosts.clear # 開発環境のため、全てのドメインを許可する設定を追加する
 
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
