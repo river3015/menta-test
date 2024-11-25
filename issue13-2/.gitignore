@@ -20,5 +20,3 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
-/mysql/db_data
-/redis/db_data
