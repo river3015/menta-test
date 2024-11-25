@@ -1,3 +1,2 @@
 .DS_Store
-mysql/db_data
-redis/db_data
+/db_data/
