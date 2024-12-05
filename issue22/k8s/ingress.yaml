@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: dev-k8s.techbull.cloud
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: wordpress
+                port:
+                  number: 80
