@@ -110,6 +110,15 @@ kubectl config use-context docker-desktop
 kubectl create namespace dev-techbull-k8s
 ```
 
+```
+kubectl create namespace dev-techbull-k8s
+Unable to connect to the server: dial tcp: lookup kubernetes.docker.internal: no such host
+```
+```
+sudo vim /etc/hosts
+127.0.0.1 kubernetes.docker.internal
+```
+
 - make secrets.yaml to create secret/mysql-secret
 
 By environment variables, pass informations to containers for access databases
